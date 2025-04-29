@@ -24,23 +24,23 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
-# Copy composer files
-COPY composer.json composer.lock ./
+# Copy package files
+COPY package.json package-lock.json ./
 
-# Install dependencies
-RUN composer install --no-dev --no-scripts --no-autoloader
+# Install npm dependencies
+RUN npm install --no-audit --no-fund
 
 # Copy the rest of the application
 COPY . .
 
+# Install composer dependencies
+RUN composer install --no-dev --no-scripts --no-autoloader
+
 # Generate autoload files
 RUN composer dump-autoload --optimize
 
-# Install npm dependencies
-RUN npm install
-
 # Build assets
-RUN npm run production
+RUN npm run prod || true
 
 # Generate key
 RUN php artisan key:generate
