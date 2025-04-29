@@ -1,4 +1,4 @@
-FROM php:8.1-fpm
+FROM php:8.2-fpm
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -24,13 +24,20 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
-# Copy existing application directory
-COPY . .
+# Copy composer files
+COPY composer.json composer.lock ./
 
 # Install dependencies
-RUN composer install --no-dev
-RUN npm install
-RUN npm run build
+RUN composer install --no-dev --no-scripts --no-autoloader
+
+# Copy the rest of the application
+COPY . .
+
+# Generate autoload files
+RUN composer dump-autoload --optimize
+
+# Install npm dependencies and build assets
+RUN npm install && npm run build
 
 # Generate key
 RUN php artisan key:generate
