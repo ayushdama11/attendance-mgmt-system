@@ -1,0 +1,18 @@
+[phases.setup]
+nixPkgs = ["nodejs", "php", "composer", "php81Extensions.mysql"]
+
+[phases.install]
+cmds = [
+    "composer install --no-dev",
+    "npm install",
+    "npm run build"
+]
+
+[phases.build]
+cmds = [
+    "php artisan key:generate",
+    "php artisan migrate --force"
+]
+
+[start]
+cmd = "php artisan serve --host=0.0.0.0 --port=$PORT" 
