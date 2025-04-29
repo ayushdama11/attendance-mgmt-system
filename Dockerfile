@@ -36,8 +36,11 @@ COPY . .
 # Generate autoload files
 RUN composer dump-autoload --optimize
 
-# Install npm dependencies and build assets
-RUN npm install && npm run build
+# Install npm dependencies
+RUN npm install
+
+# Build assets
+RUN npm run production
 
 # Generate key
 RUN php artisan key:generate

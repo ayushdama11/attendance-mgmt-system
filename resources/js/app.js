@@ -1,24 +1,14 @@
 /**
  * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
+ * includes Alpine.js and other libraries.
  */
 
 require('./bootstrap');
 require('alpinejs');
 
-// Import Vue
-import Vue from 'vue';
-
 // Import Bootstrap
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
-// Import Vue components if needed
-// import ExampleComponent from './components/ExampleComponent.vue';
-
-// Initialize Vue
-window.Vue = Vue;
 
 /**
  * The following block of code may be used to automatically register your
