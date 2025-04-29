@@ -18,6 +18,10 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 # Install PHP extensions
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
+# Configure PHP-FPM logging
+RUN echo "access.log = /proc/self/fd/2" >> /usr/local/etc/php-fpm.d/docker.conf && \
+    echo "access.format = \"%R - %u %t \"%m %r\" %s %f %{mili}d %{kilo}M %C%%\"" >> /usr/local/etc/php-fpm.d/docker.conf
+
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -40,14 +44,20 @@ RUN composer install --no-dev --no-scripts --no-autoloader
 RUN composer dump-autoload --optimize
 
 # Build assets
-RUN npm run prod || true
+RUN npm install && \
+    npm run prod && \
+    npm cache clean --force
+
+# Copy compiled assets to public directory
+RUN mkdir -p /var/www/public && \
+    cp -r public/* /var/www/public/
 
 # Generate key
 RUN php artisan key:generate
 
 # Set permissions
-RUN chown -R www-data:www-data /var/www/storage
-RUN chmod -R 775 /var/www/storage
+RUN chown -R www-data:www-data /var/www/storage /var/www/public && \
+    chmod -R 775 /var/www/storage /var/www/public
 
 # Expose port 9000
 EXPOSE 9000
